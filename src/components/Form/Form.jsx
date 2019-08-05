@@ -23,7 +23,7 @@ class Form extends React.Component {
 				htmlFor: "lastname",
 				name: "lastname"				
 			},
-			password: {
+			password: {   
 				type: "password",
 				value: "",
 				label: "Пароль",
@@ -44,6 +44,10 @@ class Form extends React.Component {
 		const cloneForm = {...this.state.forms}
 		cloneForm[controlName].value = event.target.value;
 
+		for (let key in cloneForm){
+			cloneForm[key].errorMessage = "";
+		} 
+
 		this.setState({
 			cloneForm
 		})		
@@ -59,12 +63,16 @@ class Form extends React.Component {
 	} 
 
 	comparison = (paramName, cloneForm) => {
-		console.log(paramName)
+		const words = {
+			firstname: "указано",
+			lastname: "указана",
+			password: "указaн"			
+		}
 		if (cloneForm[paramName].value !== ""){
 			if (cloneForm[paramName].value === this.state.user[paramName]){
 				return true; // Правильный ответ
 			} else {
-				cloneForm[paramName].errorMessage =  `${cloneForm[paramName].label} указано не верно`;
+				cloneForm[paramName].errorMessage =  `${cloneForm[paramName].label} ${words[paramName]} не верно`;
 				return false;
 			}
 		} else {
@@ -76,15 +84,11 @@ class Form extends React.Component {
 	onSubmitHandler = event => {
 		event.preventDefault();
 		const cloneForm = {...this.state.forms};
-
 		let resultComparison = [];
 		for (let key in cloneForm){
 			resultComparison.push(this.comparison(key, cloneForm))
 		}
-		
-		let success = this.successUser(resultComparison); 
-		
-		if(success){
+		if(this.successUser(resultComparison)){// Проверка State success
 			this.setState({
 				success: true
 			})	
@@ -93,7 +97,6 @@ class Form extends React.Component {
 				cloneForm
 			})	
 		}
-
 	}
 
 	renderInputs = () => {
@@ -133,7 +136,6 @@ class Form extends React.Component {
 
 	render() {
 		const success = this.state.success;
-		console.log(success)
 		return (
 			<div className="app-container">
 
